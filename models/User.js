@@ -7,14 +7,14 @@ class User {
       var result = await knex
         .select(["id", "email", "role", "name"])
         .table("users");
-      if (result.length > 0 ) {
-        return result[0]
+      if (result.length > 0) {
+        return result[0];
       } else {
-        return undefined
+        return undefined;
       }
     } catch (err) {
       console.log(err);
-      return undefined
+      return undefined;
     }
   }
 
@@ -56,43 +56,55 @@ class User {
     }
   }
 
-  async update(id, email, name, role){
-    var user = await this.findById(id)
+  async update(id, email, name, role) {
+    var user = await this.findById(id);
     if (user !== undefined) {
-      var editUser = {}
+      var editUser = {};
 
-      if(email != undefined){
-        if (email != user.email){
-          var result = await this.findEmail(email)
-          if(result == false){
-            editUser.email = email
-          }else{
-            return {status: false, err: "O e-mail já está cadastrado!"}
+      if (email != undefined) {
+        if (email != user.email) {
+          var result = await this.findEmail(email);
+          if (result == false) {
+            editUser.email = email;
+          } else {
+            return { status: false, err: "O e-mail já está cadastrado!" };
           }
         }
       }
-      if(name != undefined){
-        editUser.name = name
+      if (name != undefined) {
+        editUser.name = name;
       }
 
-      if(role != undefined){
-        editUser.role = role
+      if (role != undefined) {
+        editUser.role = role;
       }
 
       try {
-        await knex.update(editUser).where({id: id}).table("users")
-        return {status: true}
+        await knex.update(editUser).where({ id: id }).table("users");
+        return { status: true };
       } catch (err) {
-        return {status: false, err: err}
+        return { status: false, err: err };
       }
     } else {
-      return {status: false, err: "O usuário não existe!"}
+      return { status: false, err: "O usuário não existe!" };
     }
+  }
 
-
-
-
-
+  async delete(id) {
+    var user = await this.findById(id);
+    if (user != undefined) {
+      try {
+        await knex.delete().where({ id: id }).table("users");
+        return { status: true };
+      } catch (err) {
+        return { status: false, err: err };
+      }
+    } else {
+      return {
+        status: false,
+        err: "O usuário não existe, portsnto não pode ser deletado!",
+      };
+    }
   }
 }
 
