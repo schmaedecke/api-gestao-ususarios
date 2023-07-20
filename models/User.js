@@ -30,6 +30,18 @@ class User {
       return [];
     }
   }
+  async findByEmail(email) {
+    try {
+      var result = await knex
+        .select(["id", "email", "role", "name"])
+        .where({ email: email })
+        .table("users");
+      return result;
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  }
   async new(name, email, password) {
     try {
       const salt = bcrypt.genSaltSync(10);
