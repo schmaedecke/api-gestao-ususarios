@@ -1,5 +1,9 @@
 var User = require("../models/User");
 var PasswordToken = require("../models/PasswordToken");
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcrypt");
+
+var secret = "jdijdiahiadhdiadhia";
 
 class UserController {
   async index(req, res) {
@@ -89,19 +93,49 @@ class UserController {
     }
   }
 
-  async changePassword(req, res){
+  async changePassword(req, res) {
     var token = req.body.token;
     var password = req.body.password;
     var isTokenValid = await PasswordToken.validate(token);
-    if(isTokenValid.status){
-        await User.changePassword(password,isTokenValid.token.user_id,isTokenValid.token.token);
-        res.status(200);
-        res.send("Senha alterada");
-    }else{
-        res.status(406);
-        res.send("Token inválido!");
+    if (isTokenValid.status) {
+      await User.changePassword(
+        password,
+        isTokenValid.token.user_id,
+        isTokenValid.token.token
+      );
+      res.status(200);
+      res.send("Senha alterada");
+    } else {
+      res.status(406);
+      res.send("Token inválido!");
     }
-}
+  }
+
+  async login(req, res) {
+    var { email, password } = req.body;
+
+    var user = await User.findByEmail(email);
+    if (user != undefined) {
+      var salt = bcrypt.genSaltSync(10);
+      var hash = bcrypt.hashSync(password, salt);
+      jwt.sign(
+        { email: user.email, role: user.role },
+        secret,
+        { expiresIn: "48h" },
+        (err, token) => {
+          if (err) {
+            res.status(400);
+            res.json({ err: "Falha interna" });
+          } else {
+            res.status(200);
+            res.json({ token: token });
+          }
+        }
+      );
+    } else {
+      res.json({ status: false });
+    }
+  }
 }
 
 module.exports = new UserController();

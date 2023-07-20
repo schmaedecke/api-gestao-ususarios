@@ -3,6 +3,7 @@ var app = express();
 var router = express.Router();
 var HomeController = require("../controllers/HomeController");
 var UserController = require("../controllers/UserController");
+const User = require("../models/User");
 
 router.get("/", HomeController.index);
 router.post("/user", UserController.create);
@@ -12,5 +13,6 @@ router.put("/user", UserController.edit);
 router.delete("/user/:id", UserController.remove);
 router.post("/recoverpassword", UserController.recoverPassword);
 router.post("/changepassword", UserController.changePassword);
+router.post("/login", UserController.login);
 
 module.exports = router;
