@@ -83,7 +83,7 @@ jspm_packages/
 # next.js build output
 .next
 
-.database/
+.database/connection.js
 
 # Lerna
 lerna-debug.log
